@@ -5,6 +5,8 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -57,12 +59,12 @@
 				]
 			},
 			{
-				"name": "ReadsTables",
+				"name": "ReadsTables_copy1",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 0,
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -71,6 +73,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "\nselect * from ctrl.table_config where is_active = 1\n and source_system = @pipeline().parameters.source_system",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -81,6 +87,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"source_system": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
